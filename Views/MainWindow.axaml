@@ -1,0 +1,158 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Synesthesia.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        d:DesignWidth="900" d:DesignHeight="620"
+        x:Class="Synesthesia.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="Synesthesia"
+        Width="900" Height="620"
+        MinWidth="700" MinHeight="560"
+        WindowStartupLocation="CenterScreen">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="*,Auto" Margin="20">
+
+        <!-- Top left: load button + busy indicator -->
+        <StackPanel Grid.Row="0" Grid.Column="0"
+                    Orientation="Horizontal"
+                    Spacing="12"
+                    VerticalAlignment="Center">
+            <Button Content="Load Track"
+                    Command="{Binding LoadTrackCommand}"
+                    IsEnabled="{Binding !LoadTrackCommand.IsRunning}"
+                    Padding="18,8" />
+
+            <ProgressBar IsVisible="{Binding LoadTrackCommand.IsRunning}"
+                         IsIndeterminate="True"
+                         Width="160"
+                         VerticalAlignment="Center" />
+        </StackPanel>
+
+        <!-- Center left: mood colour -->
+        <Border Grid.Row="1" Grid.Column="0"
+                Width="350" Height="350"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                CornerRadius="20"
+                BorderThickness="1"
+                BorderBrush="#33000000"
+                BoxShadow="0 15 30 0 #33000000"
+                Background="{Binding PredictedColorBrush}">
+            <Border.Transitions>
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.5" />
+                </Transitions>
+            </Border.Transitions>
+        </Border>
+
+        <!-- Right column: dashboard stats -->
+        <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
+                    VerticalAlignment="Center"
+                    Spacing="30"
+                    Margin="50,0,0,0">
+
+            <!-- BPM -->
+            <StackPanel Spacing="5">
+                <TextBlock Text="BPM"
+                           FontSize="14"
+                           Foreground="Gray"
+                           FontWeight="Bold" />
+                <TextBlock Text="{Binding BpmValue, StringFormat={}{0:F0}}"
+                           FontSize="42"
+                           FontWeight="Black"
+                           MinWidth="100" />
+            </StackPanel>
+
+            <!-- Valence -->
+            <StackPanel Spacing="5">
+                <TextBlock Text="VALENCE"
+                           FontSize="14"
+                           Foreground="Gray"
+                           FontWeight="Bold" />
+                <TextBlock Text="{Binding ValenceValue, StringFormat={}{0:F2}}"
+                           FontSize="42"
+                           FontWeight="Black"
+                           MinWidth="100" />
+                <ProgressBar Value="{Binding ValenceValue}"
+                             Maximum="1"
+                             Height="6"
+                             Foreground="#4CAF50"
+                             Background="#E0E0E0"
+                             CornerRadius="3"
+                             Margin="0,4,0,0" />
+            </StackPanel>
+
+            <!-- Arousal -->
+            <StackPanel Spacing="5">
+                <TextBlock Text="AROUSAL"
+                           FontSize="14"
+                           Foreground="Gray"
+                           FontWeight="Bold" />
+                <TextBlock Text="{Binding ArousalValue, StringFormat={}{0:F2}}"
+                           FontSize="42"
+                           FontWeight="Black"
+                           MinWidth="100" />
+                <ProgressBar Value="{Binding ArousalValue}"
+                             Maximum="1"
+                             Height="6"
+                             Foreground="#FF9800"
+                             Background="#E0E0E0"
+                             CornerRadius="3"
+                             Margin="0,4,0,0" />
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Bottom panel: track name + transport, spanning both columns -->
+        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+              RowDefinitions="Auto,Auto"
+              ColumnDefinitions="Auto,*"
+              Margin="0,16,0,0">
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                       Text="{Binding StatusMessage}"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,10"
+                       FontSize="13"
+                       Foreground="#888888"
+                       TextTrimming="CharacterEllipsis"
+                       TextWrapping="NoWrap" />
+
+            <Button Grid.Row="1" Grid.Column="0"
+                    Content="{Binding PlayButtonIcon}"
+                    Command="{Binding PlayPauseCommand}"
+                    IsEnabled="{Binding HasTrack}"
+                    Width="50" Height="50"
+                    FontSize="20"
+                    FontFamily="Segoe UI Symbol, Inter"
+                    Padding="0"
+                    Margin="0,0,16,0"
+                    VerticalAlignment="Center"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center" />
+
+            <StackPanel Grid.Row="1" Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Spacing="2">
+                <Slider Minimum="0"
+                        Maximum="{Binding TrackDuration}"
+                        Value="{Binding TrackPosition, Mode=TwoWay}"
+                        IsSnapToTickEnabled="False"
+                        IsEnabled="{Binding HasTrack}"
+                        PointerPressed="Slider_PointerPressed"
+                        PointerReleased="Slider_PointerReleased" />
+
+                <TextBlock Text="{Binding TimeDisplay}"
+                           HorizontalAlignment="Center"
+                           FontSize="12"
+                           Foreground="#888888" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
